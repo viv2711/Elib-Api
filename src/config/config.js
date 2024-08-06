@@ -6,7 +6,8 @@ dotenv.config();
 const _config = {
     port: process.env.PORT,
     mongodbString: process.env.MONGO_CONNECTION_STRING,
-    env: process.env.NODE_ENV
+    env: process.env.NODE_ENV,
+    jwtSecret: process.env.JWTSecret
 };
 // Freeze the configuration object to prevent modifications
 export const config = Object.freeze(_config);
