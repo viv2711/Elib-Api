@@ -5,7 +5,7 @@ import userModel from "./userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
-
+import { create } from "domain";
 
 export const createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -56,9 +56,45 @@ export const createUser = async (req, res, next) => {
 };
 
 export const loginUser = async (req, res, next) => {
-  try{
-    res.json({msg: "OK"})
-  }catch(err){
-    return next(createHttpError(500, "Server Error"))
+  const { email, password } = req.body;
+
+  // Validation
+  if (!email || !password) {
+    return next(createHttpError(400, "All fields are required"));
   }
+  let user;
+
+  // handling user not found error
+  try {
+    user = await userModel.findOne({ email: email });
+
+    if (!user) {
+      throw new Error("User not found")
+    }
+  } catch (err) {
+    return next(createHttpError(404, err));
+  }
+
+  // Verifying the password
+  let isMatch;
+  try {
+    isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error("Username or Password Incorrect");
+    }
+  } catch (err) {
+    return next(createHttpError(404, err));
+  }
+
+  // Create new access token for login
+  try {
+    const token = jwt.sign({ sub: user._id }, config.jwtSecret, {
+      expiresIn: "7d",
+      algorithm: "HS256",
+    });
+    res.json({ accessToken: token });
+  } catch (err) {
+    return next(createHttpError(500, "Unable to create token"));
+  }
+  
 };
