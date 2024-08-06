@@ -5,6 +5,8 @@ import userModel from "./userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
+
+
 export const createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -47,8 +49,16 @@ export const createUser = async (req, res, next) => {
       algorithm: "HS256",
     });
 
-    return res.json({ accessToken: token });
+    return res.status(201).json({ accessToken: token });
   } catch (err) {
     return next(createHttpError(500, "Error while creating JWT server"));
+  }
+};
+
+export const loginUser = async (req, res, next) => {
+  try{
+    res.json({msg: "OK"})
+  }catch(err){
+    return next(createHttpError(500, "Server Error"))
   }
 };
