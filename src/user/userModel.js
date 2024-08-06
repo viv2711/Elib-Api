@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 // User Schema
 const userSchema = new mongoose.Schema(
   {
@@ -22,5 +21,5 @@ const userSchema = new mongoose.Schema(
 );
 
 // users collection in mongodb
-const userModel = mongoose.model('User', userSchema);
- export default userModel ;
+const userModel = mongoose.model("User", userSchema);
+export default userModel;

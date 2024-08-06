@@ -5,7 +5,6 @@ import userModel from "./userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
-import { create } from "domain";
 
 export const createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -69,7 +68,7 @@ export const loginUser = async (req, res, next) => {
     user = await userModel.findOne({ email: email });
 
     if (!user) {
-      throw new Error("User not found")
+      throw new Error("User not found");
     }
   } catch (err) {
     return next(createHttpError(404, err));
@@ -96,5 +95,4 @@ export const loginUser = async (req, res, next) => {
   } catch (err) {
     return next(createHttpError(500, "Unable to create token"));
   }
-  
 };
