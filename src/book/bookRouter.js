@@ -3,6 +3,7 @@ import createBook from "./bookController.js";
 import multer from "multer";
 import path, { dirname } from "path";
 import url from "url";
+import authenticate from "../middlewares/authenticate.js";
 const bookRouter = express.Router();
 
 const __fileName = url.fileURLToPath(import.meta.url);
@@ -16,6 +17,7 @@ const upload = multer({
 // we use upload.fields as we need to send multiple files to the server that is cover image and book pdf
 bookRouter.post(
   "/",
+  authenticate,
   upload.fields([{ name: "file", maxCount: 1 }]),
   createBook
 );

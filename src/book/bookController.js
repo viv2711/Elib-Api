@@ -33,7 +33,7 @@ const createBook = async (req, res, next) => {
       format: "pdf",
     });
     console.log("UploadResult", uploadResult);
-
+    console.log("userId", req.userId);
     const newBook = await bookModel.create({
       title,
       genre,
@@ -50,7 +50,7 @@ const createBook = async (req, res, next) => {
         createHttpError(500, "Error in deleting the temporary files")
       );
     }
-    res.status(201).json({ id: newBook._id });
+    //res.status(201).json({ id: newBook._id });
   } catch (err) {
     console.log(err);
     return next(createHttpError(500, "Error while uploading on Cloudinary"));
