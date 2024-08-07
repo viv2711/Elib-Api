@@ -12,10 +12,6 @@ const bookSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
-    coverImage: {
-      type: String,
-      required: true,
-    },
     file: {
       type: String,
       required: true,

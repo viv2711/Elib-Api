@@ -8,6 +8,9 @@ const _config = {
   mongodbString: process.env.MONGO_CONNECTION_STRING,
   env: process.env.NODE_ENV,
   jwtSecret: process.env.JWTSecret,
+  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD,
+  clodinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_secret: process.env.CLOUDINARY_SECRET,
 };
 // Freeze the configuration object to prevent explicit modifications
 export const config = Object.freeze(_config);
