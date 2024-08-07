@@ -12,12 +12,12 @@ const upload = multer({
   limits: { fileSize: 3e7 }, //30mb
 });
 
-// we use upload.fields as we need to send multiple files that is cover image and book pdf
+// we use upload.fields as we need to send multiple files to the server that is cover image and book pdf
 bookRouter.post(
-  "/register",
+  "/",
   upload.fields([
     { name: "coverImage", maxCount: 1 },
-    { name: "file", maxCOunt: 1 },
+    { name: "file", maxCount: 1 },
   ]),
   createBook
 );
