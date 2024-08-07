@@ -9,6 +9,6 @@ const _config = {
   env: process.env.NODE_ENV,
   jwtSecret: process.env.JWTSecret,
 };
-// Freeze the configuration object to prevent modifications
+// Freeze the configuration object to prevent explicit modifications
 export const config = Object.freeze(_config);
 //Object.freeze is used to freeze the object or make it read only object so that no can change it

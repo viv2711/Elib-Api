@@ -20,6 +20,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// users collection in mongodb
+//it creates users collection in mongodb
 const userModel = mongoose.model("User", userSchema);
 export default userModel;

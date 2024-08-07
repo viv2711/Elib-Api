@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import express from "express";
 import globalErrorHandler from "./middlewares/globalHandler.js";
 import userRouter from "./user/userRouter.js";
+import bookRouter from "./book/bookRouter.js";
 const app = express();
 
 // In built middleware for json parsing
@@ -14,6 +15,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/api/users", userRouter);
+app.use("/api/books", bookRouter);
 
 // Global Error Handler - it is a special type of middleware where we have four params
 app.use(globalErrorHandler);
