@@ -81,19 +81,19 @@ const updateBook = async (req, res, next) => {
       req.files.file[0].filename
     );
   }
+  if (filePath) {
+    const fileName = req.files.file[0].filename;
+    completeFileName = fileName;
 
-  const fileName = req.files.file[0].filename;
-  completeFileName = fileName;
-
-  const uploadResultPdf = await cloudinary.uploader.upload(filePath, {
-    resource_type: "raw",
-    filename_override: completeFileName,
-    folder: "book-pdfs",
-    format: "pdf",
-  });
-
-  completeFileName = uploadResultPdf.secure_url;
-  await fs.promises.unlink(filePath);
+    const uploadResultPdf = await cloudinary.uploader.upload(filePath, {
+      resource_type: "raw",
+      filename_override: completeFileName,
+      folder: "book-pdfs",
+      format: "pdf",
+    });
+    completeFileName = uploadResultPdf.secure_url;
+    await fs.promises.unlink(filePath);
+  }
 
   const updateBook = await bookModel.findOneAndUpdate(
     {
@@ -129,7 +129,37 @@ const getBook = async (req, res, next) => {
     return next(createHttpError(500, err));
   }
 };
-export { createBook, updateBook, listBook, getBook };
+const deleteBook = async (req, res, next) => {
+  const bookId = req.params.bookid;
+  const book = await bookModel.findOne({ _id: bookId });
+  if (!book) {
+    return next(createHttpError(404, "Book not found"));
+  }
+  // Check access
+  if (book.author.toString() !== req.userId) {
+    return next(createHttpError(403, "Unauthorized"));
+  }
+
+  // delete files from cloudinary
+  // https://res.cloudinary.com/ebooklib/raw/upload/v1723113959/book-pdfs/nwu2n4pehlsd2s6rqyzz.pdf
+  // const file = book.file;
+  const fileId = book.file.split("/");
+  const publicId = fileId.at(-2) + "/" + fileId.at(-1);
+  console.log(publicId);
+
+  try {
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: "raw",
+    });
+  } catch (err) {
+    return next(createHttpError(500, "Error while deleting from cloudinary"));
+  }
+
+  await bookModel.deleteOne({ _id: bookId });
+
+  res.sendStatus(204);
+};
+export { createBook, updateBook, listBook, getBook, deleteBook };
 // To send data like pdf, image etc in the body, we use multipart form-data
 /* Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is written on top of busboy for maximum efficiency. */
 // we use external library multer for this purpose
