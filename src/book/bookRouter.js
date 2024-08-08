@@ -1,5 +1,5 @@
 import express from "express";
-import createBook from "./bookController.js";
+import {createBook, updateBook} from "./bookController.js";
 import multer from "multer";
 import path, { dirname } from "path";
 import url from "url";
@@ -20,6 +20,13 @@ bookRouter.post(
   authenticate,
   upload.fields([{ name: "file", maxCount: 1 }]),
   createBook
+);
+
+bookRouter.patch(
+  "/:bookid",
+  authenticate,
+  upload.fields([{ name: "file", maxCount: 1 }]),
+  updateBook
 );
 
 export default bookRouter;

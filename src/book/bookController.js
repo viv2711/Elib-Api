@@ -5,12 +5,12 @@ import fs from "fs";
 import createHttpError from "http-errors";
 import bookModel from "./bookModel.js";
 /* eslint-disable no-unused-vars */
+const __fileName = url.fileURLToPath(import.meta.url);
+const __dirname = dirname(__fileName);
 const createBook = async (req, res, next) => {
   // console.log("files", req.body, req.files);
   const { title, genre } = req.body;
   //getting __fileName __dirName
-  const __fileName = url.fileURLToPath(import.meta.url);
-  const __dirname = dirname(__fileName);
 
   // getting the coverImage type i.e "jpg"
   // const fileType = req.files.file[0].mimetype.split("/").at(-1);
@@ -50,15 +50,66 @@ const createBook = async (req, res, next) => {
         createHttpError(500, "Error in deleting the temporary files")
       );
     }
-    //res.status(201).json({ id: newBook._id });
+    res.status(201).json({ id: newBook._id });
   } catch (err) {
     console.log(err);
     return next(createHttpError(500, "Error while uploading on Cloudinary"));
   }
 };
+const updateBook = async (req, res, next) => {
+  const { title, genre } = req.body;
 
-export default createBook;
+  const bookId = req.params.bookid;
 
+  const book = await bookModel.findOne({ _id: bookId });
+
+  if (!book) {
+    return next(createHttpError(404, "Book not found"));
+  }
+
+  // Accesss Check
+  if (book.author.toString() !== req.userId) {
+    return next(createHttpError(403, "Unauthorized"));
+  }
+
+  let completeFileName = "";
+  let filePath;
+  if (req.files.file) {
+    filePath = path.resolve(
+      __dirname,
+      "../../public/data/uploads/" + req.files.file[0].filename
+    );
+  }
+
+  const fileName = req.files.file[0].filename;
+  completeFileName = fileName;
+
+  const uploadResultPdf = await cloudinary.uploader.upload(filePath, {
+    resource_type: "raw",
+    filename_override: completeFileName,
+    folder: "book-pdfs",
+    format: "pdf",
+  });
+
+  completeFileName = uploadResultPdf.secure_url;
+  await fs.promises.unlink(filePath);
+
+  const updateBook = await bookModel.findOneAndUpdate(
+    {
+      _id: bookId,
+    },
+    {
+      title,
+      genre,
+      file: completeFileName ? completeFileName : book.file,
+    },
+    { new: true }
+  );
+  res.status(201).json(bookId);
+  console.log("Updated Book: ", updateBook);
+};
+
+export { createBook, updateBook };
 // To send data like pdf, image etc in the body, we use multipart form-data
 /* Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is written on top of busboy for maximum efficiency. */
 // we use external library multer for this purpose

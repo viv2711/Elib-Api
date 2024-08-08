@@ -10,17 +10,16 @@ const authenticate = (req, res, next) => {
   // we pass Authorization key the value = "bearer @#$%^&*YOUR-JWT-TOKEN@#$%^&*"
   const parseToken = token.split(" ")[1];
 
-  
-
   try {
     const decoded = jwt.verify(parseToken, config.jwtSecret);
     console.log("decoded", decoded);
     req.userId = decoded.sub;
-    res.json({ msg: "Authentication Successfull" });
+
   } catch (err) {
     console.log(err);
     return next(createHttpError(500, "User not authenticated"));
   }
+  // res.json({ msg: "Authentication Successfull" });
   next();
 };
 export default authenticate;
