@@ -14,7 +14,6 @@ const authenticate = (req, res, next) => {
     const decoded = jwt.verify(parseToken, config.jwtSecret);
     console.log("decoded", decoded);
     req.userId = decoded.sub;
-
   } catch (err) {
     console.log(err);
     return next(createHttpError(500, "User not authenticated"));

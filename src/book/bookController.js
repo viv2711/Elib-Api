@@ -84,7 +84,7 @@ const updateBook = async (req, res, next) => {
   if (filePath) {
     const fileName = req.files.file[0].filename;
     completeFileName = fileName;
-    
+
     const fileId = book.file.split("/");
     const publicId = fileId.at(-2) + "/" + fileId.at(-1);
     try {
