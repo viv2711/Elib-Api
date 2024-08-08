@@ -84,7 +84,18 @@ const updateBook = async (req, res, next) => {
   if (filePath) {
     const fileName = req.files.file[0].filename;
     completeFileName = fileName;
-
+    
+    const fileId = book.file.split("/");
+    const publicId = fileId.at(-2) + "/" + fileId.at(-1);
+    try {
+      await cloudinary.uploader.destroy(publicId, {
+        resource_type: "raw",
+      });
+    } catch (err) {
+      return next(
+        createHttpError(500, "Error while updating files to cloudinary")
+      );
+    }
     const uploadResultPdf = await cloudinary.uploader.upload(filePath, {
       resource_type: "raw",
       filename_override: completeFileName,
