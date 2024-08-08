@@ -77,7 +77,8 @@ const updateBook = async (req, res, next) => {
   if (req.files.file) {
     filePath = path.resolve(
       __dirname,
-      "../../public/data/uploads/" , req.files.file[0].filename
+      "../../public/data/uploads/",
+      req.files.file[0].filename
     );
   }
 
@@ -109,16 +110,26 @@ const updateBook = async (req, res, next) => {
   console.log("Updated Book: ", updateBook);
 };
 const listBook = async (req, res, next) => {
-  try{
+  try {
     // todo add pagination
     const book = await bookModel.find();
-    res.json({book})
-  }catch(err){
-    return next(createHttpError(500, "Error while getting a book"))
+    res.json({ book });
+  } catch (err) {
+    return next(createHttpError(500, "Error while getting a book"));
   }
-  
-}
-export { createBook, updateBook, listBook };
+};
+const getBook = async (req, res, next) => {
+  try {
+    const book = await bookModel.findOne({ _id: req.params.bookid });
+    if (!book) {
+      return next(createHttpError(404, "Book not found"));
+    }
+    res.json({ book });
+  } catch (err) {
+    return next(createHttpError(500, err));
+  }
+};
+export { createBook, updateBook, listBook, getBook };
 // To send data like pdf, image etc in the body, we use multipart form-data
 /* Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is written on top of busboy for maximum efficiency. */
 // we use external library multer for this purpose
